@@ -1,6 +1,6 @@
 package com.br.desafio.estacionamento.vaga.repository;
 
-import com.br.desafio.estacionamento.vaga.Entity.Vaga;
+import com.br.desafio.estacionamento.vaga.entity.Vaga;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface VagaRepository extends JpaRepository<Vaga,Long> {
 
     Optional<Vaga>findByIdAndAtivoTrue(Long id);
+    Optional<Vaga>findByCodigoAndAtivoTrue(String codigo);
     List<Vaga> findAllByAtivoTrue();
 }
