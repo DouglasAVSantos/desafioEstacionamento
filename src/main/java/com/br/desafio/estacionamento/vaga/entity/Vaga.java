@@ -12,7 +12,9 @@ public class Vaga {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String codigo;
+    @Column(name = "criado_em")
     private LocalDateTime criadoEm;
     @Enumerated(EnumType.STRING)
     private Estado estado;

@@ -2,6 +2,7 @@ package com.br.desafio.estacionamento.vaga.service;
 
 import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
+import com.br.desafio.estacionamento.vaga.dto.VagaMapper;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
 import com.br.desafio.estacionamento.vaga.entity.Estado;
@@ -30,11 +31,11 @@ public class VagaService {
     }
 
     public VagaResponse findVaga(Long id) {
-        return VagaResponse.of(repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("registro não encotrado")));
+        return VagaMapper.toResponse(repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("registro não encotrado")));
     }
 
     public List<VagaResponse> findAll() {
-        return repository.findAllByAtivoTrue().stream().map(VagaResponse::of).toList();
+        return repository.findAllByAtivoTrue().stream().map(VagaMapper::toResponse).toList();
     }
 
     @Transactional
@@ -51,7 +52,7 @@ public class VagaService {
             throw new ConflictException("Vaga não está ocupada");
         }
         vaga.setEstado(Estado.LIVRE);
-        return VagaResponse.of(repository.save(vaga));
+        return VagaMapper.toResponse(repository.save(vaga));
     }
 
     @Transactional
@@ -61,7 +62,7 @@ public class VagaService {
             throw new ConflictException("Vaga já ocupada");
         }
         vaga.setEstado(Estado.OCUPADA);
-        return VagaResponse.of(repository.save(vaga));
+        return VagaMapper.toResponse(repository.save(vaga));
     }
 
     private Vaga getVaga(Long id) {

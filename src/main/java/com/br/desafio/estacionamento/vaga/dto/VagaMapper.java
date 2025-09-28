@@ -1,0 +1,16 @@
+package com.br.desafio.estacionamento.vaga.dto;
+
+import com.br.desafio.estacionamento.vaga.entity.Vaga;
+import org.springframework.stereotype.Component;
+
+@Component
+public class VagaMapper {
+
+    public static Vaga toEntity(VagaRequest request){
+        return Vaga.of(request);
+    }
+
+    public static VagaResponse toResponse(Vaga vaga){
+        return VagaResponse.of(vaga);
+    }
+}
