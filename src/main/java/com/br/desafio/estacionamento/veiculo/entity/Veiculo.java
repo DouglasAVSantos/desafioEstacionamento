@@ -3,6 +3,9 @@ package com.br.desafio.estacionamento.veiculo.entity;
 import com.br.desafio.estacionamento.veiculo.dto.VeiculoRequest;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 @Entity
 @Table(name = "veiculos")
 public class Veiculo {
@@ -13,6 +16,28 @@ public class Veiculo {
     private String placa;
     @Enumerated(EnumType.STRING)
     private TipoVeiculo tipo;
+    @Column(name = "registrado_em")
+    private LocalDateTime registradoEm;
+
+    public LocalDateTime getRegistradoEm() {
+        return registradoEm;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Veiculo veiculo = (Veiculo) o;
+        return Objects.equals(id, veiculo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public void setRegistradoEm(LocalDateTime registradoEm) {
+        this.registradoEm = registradoEm;
+    }
 
     private Veiculo(String modelo, String placa, TipoVeiculo tipo) {
         this.modelo = modelo;

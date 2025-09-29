@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record VeiculoRequest (
-        @NotBlank
+        @NotBlank(message = "CAMPO OBRIGATORIO")
         String modelo,
-        @NotBlank
+        @NotBlank(message = "CAMPO OBRIGATORIO")
         String placa,
-        @NotNull
+        @NotNull(message = "CAMPO OBRIGATORIO")
         TipoVeiculo tipo){
 
     public VeiculoRequest {

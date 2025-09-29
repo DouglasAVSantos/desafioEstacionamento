@@ -27,7 +27,7 @@ public class VagaService {
         if (repository.findByCodigoAndAtivoTrue(request.codigo()).isPresent()) {
             throw new ConflictException("registro já cadastrado");
         }
-        return VagaResponse.of(repository.save(Vaga.of(request)));
+        return VagaMapper.toResponse(repository.save(VagaMapper.toEntity(request)));
     }
 
     public VagaResponse findVaga(Long id) {

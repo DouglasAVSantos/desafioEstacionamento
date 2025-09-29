@@ -5,6 +5,7 @@ import com.br.desafio.estacionamento.veiculo.entity.Veiculo;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "vagas")
@@ -30,15 +31,15 @@ public class Vaga {
         return criadoEm;
     }
 
-    private  Vaga(String codigo, LocalDateTime criadoEm, Estado estado, Boolean ativo) {
+    private Vaga(String codigo, LocalDateTime criadoEm, Estado estado, Boolean ativo) {
         this.codigo = codigo;
         this.estado = estado;
         this.ativo = ativo;
         this.criadoEm = criadoEm;
     }
 
-    public static Vaga of(VagaRequest request){
-        return new Vaga(request.codigo(),LocalDateTime.now(),request.estado(),true);
+    public static Vaga of(VagaRequest request) {
+        return new Vaga(request.codigo(), LocalDateTime.now(), request.estado(), true);
     }
 
     public Long getId() {
@@ -71,5 +72,17 @@ public class Vaga {
 
     public void setEstado(Estado estado) {
         this.estado = estado;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Vaga vaga = (Vaga) o;
+        return Objects.equals(id, vaga.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
