@@ -48,14 +48,4 @@ public ResponseEntity<List<VagaResponse>> findAll(){
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/in/{id}")
-    public ResponseEntity<VagaResponse> checkIn(@PathVariable Long id){
-        return ResponseEntity.ok(service.checkIn(id));
-    }
-
-    @PutMapping("/out/{id}")
-    public ResponseEntity<VagaResponse> checkOut(@PathVariable Long id){
-        return ResponseEntity.ok(service.checkOut(id));
-    }
-
 }
