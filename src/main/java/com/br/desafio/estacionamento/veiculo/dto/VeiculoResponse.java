@@ -17,6 +17,6 @@ public record VeiculoResponse(
         veiculo.getModelo(),
         veiculo.getPlaca(),
         veiculo.getTipo().name(),
-        veiculo.getRegistradoEm().format(DateTimeFormatter.BASIC_ISO_DATE));
+        veiculo.getRegistradoEm().format(DateTimeFormatter.ISO_DATE_TIME));
     }
 }

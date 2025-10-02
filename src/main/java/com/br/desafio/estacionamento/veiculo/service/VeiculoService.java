@@ -39,13 +39,12 @@ public class VeiculoService {
     @Transactional
     public VeiculoResponse atualizarCadastro(Long id, VeiculoRequest request) {
         Veiculo v = getVeiculo(id);
-        if (repository.findByPlaca(request.placa()).isPresent()) {
+        if (!repository.findByPlaca(request.placa()).isPresent()) {
             throw new ConflictException("registro já cadastrado");
         }
         v.setModelo(request.modelo());
         v.setTipo(request.tipo());
-        v.setPlaca(request.placa());
-        return VeiculoMapper.toResponse(v);
+        return VeiculoMapper.toResponse(repository.save(v));
     }
 
     public List<VeiculoResponse> findAll() {
