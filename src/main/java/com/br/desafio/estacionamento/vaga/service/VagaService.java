@@ -38,6 +38,10 @@ public class VagaService {
         return repository.findAllByAtivoTrue().stream().map(VagaMapper::toResponse).toList();
     }
 
+    public List<VagaResponse> findAllByEstado(Estado estado) {
+        return repository.findAllByAtivoTrueAndEstado(estado).stream().map(VagaMapper::toResponse).toList();
+    }
+
     @Transactional
     public void inativaById(Long id) {
         Vaga vaga = getVaga(id);
