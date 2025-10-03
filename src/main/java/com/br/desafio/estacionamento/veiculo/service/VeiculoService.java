@@ -2,7 +2,7 @@ package com.br.desafio.estacionamento.veiculo.service;
 
 import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
-import com.br.desafio.estacionamento.veiculo.dto.VeiculoMapper;
+import com.br.desafio.estacionamento.veiculo.mapper.VeiculoMapper;
 import com.br.desafio.estacionamento.veiculo.dto.VeiculoRequest;
 import com.br.desafio.estacionamento.veiculo.dto.VeiculoResponse;
 import com.br.desafio.estacionamento.veiculo.entity.Veiculo;
@@ -36,22 +36,24 @@ public class VeiculoService {
         return VeiculoMapper.toResponse(getVeiculo(id));
     }
 
+    public Veiculo findVeiculo(String placa) {
+        return repository.findByPlaca(placa).orElseThrow(()->new NotFoundException("Veiculo não encontrado"));
+    }
+
     @Transactional
     public VeiculoResponse atualizarCadastro(Long id, VeiculoRequest request) {
-        Veiculo v = getVeiculo(id);
-        if (!repository.findByPlaca(request.placa()).isPresent()) {
-            throw new ConflictException("registro já cadastrado");
+        Veiculo veiculo = getVeiculo(id);
+        if (repository.findByPlaca(request.placa()).isPresent()) {
+            throw new ConflictException("veiculo com a placa '"+request.placa()+"' já cadastrada");
         }
-        v.setModelo(request.modelo());
-        v.setTipo(request.tipo());
-        return VeiculoMapper.toResponse(repository.save(v));
+        return VeiculoMapper.toResponse(repository.save(VeiculoMapper.toAttEntity(veiculo,request)));
     }
 
     public List<VeiculoResponse> findAll() {
         return repository.findAll().stream().map(VeiculoMapper::toResponse).toList();
     }
 
-    private Veiculo getVeiculo(Long id) {
+    public Veiculo getVeiculo(Long id) {
         return repository.findById(id).orElseThrow(() -> new NotFoundException("registro não encontrado para o id: " + id));
     }
 }

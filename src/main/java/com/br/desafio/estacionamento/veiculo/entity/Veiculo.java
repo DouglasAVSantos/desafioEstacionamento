@@ -1,6 +1,5 @@
 package com.br.desafio.estacionamento.veiculo.entity;
 
-import com.br.desafio.estacionamento.veiculo.dto.VeiculoRequest;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +8,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "veiculos")
 public class Veiculo {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String modelo;
     @Column(unique = true)
@@ -39,17 +39,13 @@ public class Veiculo {
         this.registradoEm = registradoEm;
     }
 
-    private Veiculo(String modelo, String placa, TipoVeiculo tipo) {
+    public Veiculo(String modelo, String placa, TipoVeiculo tipo) {
         this.modelo = modelo;
         this.placa = placa;
         this.tipo = tipo;
     }
 
     public Veiculo() {
-    }
-
-    public static Veiculo of(VeiculoRequest request){
-        return new Veiculo(request.modelo(),request.placa(),request.tipo());
     }
 
     public Long getId() {
