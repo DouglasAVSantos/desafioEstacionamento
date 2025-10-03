@@ -4,9 +4,7 @@ import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
 import com.br.desafio.estacionamento.movimentacao.entity.Movimentacao;
 import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.veiculo.mapper.VeiculoMapper;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MovimentacaoMapper {
 
 
