@@ -1,5 +1,7 @@
-package com.br.desafio.estacionamento.vaga.dto;
+package com.br.desafio.estacionamento.vaga.mapper;
 
+import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
+import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
 import com.br.desafio.estacionamento.vaga.entity.Vaga;
 import org.springframework.stereotype.Component;
 
