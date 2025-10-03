@@ -1,6 +1,6 @@
 package com.br.desafio.estacionamento.vaga.dto;
 
-import com.br.desafio.estacionamento.vaga.entity.Estado;
+import com.br.desafio.estacionamento.vaga.Estado;
 import jakarta.validation.constraints.NotBlank;
 
 import java.util.Objects;

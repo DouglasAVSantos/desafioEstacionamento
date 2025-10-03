@@ -2,7 +2,7 @@ package com.br.desafio.estacionamento.vaga.controller;
 
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
-import com.br.desafio.estacionamento.vaga.entity.Estado;
+import com.br.desafio.estacionamento.vaga.Estado;
 import com.br.desafio.estacionamento.vaga.service.VagaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -17,7 +17,7 @@ public class VagaMapper {
         return new VagaResponse(
                 vaga.getId(),
                 vaga.getCodigo(),
-                vaga.getEstado().name(),
+                vaga.getEstado(),
                 vaga.getCriadoEm()
         );
     }

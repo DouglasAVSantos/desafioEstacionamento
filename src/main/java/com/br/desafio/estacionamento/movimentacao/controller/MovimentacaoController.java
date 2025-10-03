@@ -1,5 +1,6 @@
 package com.br.desafio.estacionamento.movimentacao.controller;
 
+import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRelatorioResponse;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRequest;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
 import com.br.desafio.estacionamento.movimentacao.service.MovimentacaoService;
@@ -8,11 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -54,7 +57,7 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Lista de movimentações retornada com sucesso")
     })
     @GetMapping("/")
-    public ResponseEntity<List<MovimentacaoResponse>> getAll() {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
@@ -63,7 +66,7 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
     })
     @GetMapping("/relatorio/estacionados")
-    public ResponseEntity<List<MovimentacaoResponse>> relatorioVeiculosEstacionados() {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioVeiculosEstacionados() {
         return ResponseEntity.ok(service.getVeiculosEstacionados());
     }
 
@@ -72,7 +75,7 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
     })
     @GetMapping("/relatorio/por-placa")
-    public ResponseEntity<List<MovimentacaoResponse>> relatorioVeiculoPorPlaca(@RequestParam String placa) {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioVeiculoPorPlaca(@RequestParam String placa) {
         return ResponseEntity.ok(service.getRelatorioVeiculoIndividual(placa));
     }
 
@@ -81,7 +84,8 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
     })
     @GetMapping("/relatorio/entrada")
-    public ResponseEntity<List<MovimentacaoResponse>> relatorioEntradaBetween(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioEntradaBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+                                                                                       @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
         return ResponseEntity.ok(service.getRelatorioEntradaBetween(inicio, fim));
     }
 
@@ -90,7 +94,8 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
     })
     @GetMapping("/relatorio/saida")
-    public ResponseEntity<List<MovimentacaoResponse>> relatorioSaidaBetween(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioSaidaBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+                                                                                     @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
         return ResponseEntity.ok(service.getRelatorioSaidaBetween(inicio, fim));
     }
 
@@ -99,7 +104,8 @@ public class MovimentacaoController {
             @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
     })
     @GetMapping("/relatorio/")
-    public ResponseEntity<List<MovimentacaoResponse>> relatorioGeral(@RequestParam LocalDateTime inicio, @RequestParam LocalDateTime fim) {
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioGeral(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+                                                                              @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
         return ResponseEntity.ok(service.getRelatorioGeralBetween(inicio, fim));
     }
 }

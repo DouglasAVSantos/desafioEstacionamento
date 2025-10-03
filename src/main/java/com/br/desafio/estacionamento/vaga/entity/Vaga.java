@@ -1,5 +1,6 @@
 package com.br.desafio.estacionamento.vaga.entity;
 
+import com.br.desafio.estacionamento.vaga.Estado;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import jakarta.persistence.*;
 

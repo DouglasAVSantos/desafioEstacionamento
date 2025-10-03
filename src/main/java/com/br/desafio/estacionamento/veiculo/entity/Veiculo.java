@@ -1,5 +1,6 @@
 package com.br.desafio.estacionamento.veiculo.entity;
 
+import com.br.desafio.estacionamento.veiculo.TipoVeiculo;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

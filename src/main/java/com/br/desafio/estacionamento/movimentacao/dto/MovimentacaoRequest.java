@@ -7,7 +7,7 @@ public record MovimentacaoRequest(
         String codigoVaga,
         @NotBlank(message = "Veiculo é obrigatório") String placaVeiculo) {
 
-    public MovimentacaoRequest{
+    public MovimentacaoRequest {
         codigoVaga = codigoVaga.trim().toUpperCase();
         placaVeiculo = placaVeiculo.trim().toUpperCase();
     }

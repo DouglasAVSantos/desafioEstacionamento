@@ -1,22 +1,14 @@
 package com.br.desafio.estacionamento.veiculo.dto;
 
-import com.br.desafio.estacionamento.veiculo.entity.Veiculo;
+import com.br.desafio.estacionamento.veiculo.TipoVeiculo;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
 public record VeiculoResponse(
         Long id,
         String modelo,
         String placa,
-        String veiculo,
-        String registradoEm
+        TipoVeiculo veiculo,
+        LocalDateTime registradoEm
 ) {
-
-    public VeiculoResponse(Veiculo veiculo) {
-        this(veiculo.getId(),
-        veiculo.getModelo(),
-        veiculo.getPlaca(),
-        veiculo.getTipo().name(),
-        veiculo.getRegistradoEm().format(DateTimeFormatter.ISO_DATE_TIME));
-    }
 }

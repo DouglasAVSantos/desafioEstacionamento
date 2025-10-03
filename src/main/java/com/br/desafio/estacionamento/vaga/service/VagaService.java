@@ -4,7 +4,7 @@ import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
-import com.br.desafio.estacionamento.vaga.entity.Estado;
+import com.br.desafio.estacionamento.vaga.Estado;
 import com.br.desafio.estacionamento.vaga.entity.Vaga;
 import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.vaga.repository.VagaRepository;

@@ -1,5 +1,6 @@
 package com.br.desafio.estacionamento.movimentacao.service;
 
+import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRelatorioResponse;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRequest;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
 import com.br.desafio.estacionamento.movimentacao.entity.Movimentacao;
@@ -78,27 +79,27 @@ public class MovimentacaoService {
         );
     }
 
-    public List<MovimentacaoResponse> getVeiculosEstacionados() {
+    public List<MovimentacaoRelatorioResponse> getVeiculosEstacionados() {
         return repository.findAllBySaidaIsNull();
     }
 
-    public List<MovimentacaoResponse> getAll() {
+    public List<MovimentacaoRelatorioResponse> getAll() {
         return repository.getAll();
     }
 
-    public List<MovimentacaoResponse> getRelatorioVeiculoIndividual(String placa) {
+    public List<MovimentacaoRelatorioResponse> getRelatorioVeiculoIndividual(String placa) {
         return repository.findAllByVeiculoPlaca(placa.trim().toUpperCase());
     }
 
-    public List<MovimentacaoResponse> getRelatorioEntradaBetween(LocalDateTime inicio, LocalDateTime fim) {
+    public List<MovimentacaoRelatorioResponse> getRelatorioEntradaBetween(LocalDateTime inicio, LocalDateTime fim) {
         return repository.findAllByEntradaBetween(inicio, fim);
     }
 
-    public List<MovimentacaoResponse> getRelatorioSaidaBetween(LocalDateTime inicio, LocalDateTime fim) {
+    public List<MovimentacaoRelatorioResponse> getRelatorioSaidaBetween(LocalDateTime inicio, LocalDateTime fim) {
         return repository.findAllBySaidaBetween(inicio, fim);
     }
 
-    public List<MovimentacaoResponse> getRelatorioGeralBetween(LocalDateTime inicio, LocalDateTime fim) {
+    public List<MovimentacaoRelatorioResponse> getRelatorioGeralBetween(LocalDateTime inicio, LocalDateTime fim) {
         return repository.findAllBetween(inicio, fim);
     }
 

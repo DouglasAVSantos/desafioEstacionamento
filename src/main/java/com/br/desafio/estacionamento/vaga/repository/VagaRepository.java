@@ -1,7 +1,7 @@
 package com.br.desafio.estacionamento.vaga.repository;
 
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
-import com.br.desafio.estacionamento.vaga.entity.Estado;
+import com.br.desafio.estacionamento.vaga.Estado;
 import com.br.desafio.estacionamento.vaga.entity.Vaga;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
