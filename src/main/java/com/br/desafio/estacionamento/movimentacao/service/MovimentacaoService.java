@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MovimentacaoService {
@@ -77,5 +78,28 @@ public class MovimentacaoService {
         );
     }
 
+    public List<MovimentacaoResponse> getVeiculosEstacionados() {
+        return repository.findAllBySaidaIsNull();
+    }
+
+    public List<MovimentacaoResponse> getAll() {
+        return repository.getAll();
+    }
+
+    public List<MovimentacaoResponse> getRelatorioVeiculoIndividual(String placa) {
+        return repository.findAllByVeiculoPlaca(placa.trim().toUpperCase());
+    }
+
+    public List<MovimentacaoResponse> getRelatorioEntradaBetween(LocalDateTime inicio, LocalDateTime fim) {
+        return repository.findAllByEntradaBetween(inicio, fim);
+    }
+
+    public List<MovimentacaoResponse> getRelatorioSaidaBetween(LocalDateTime inicio, LocalDateTime fim) {
+        return repository.findAllBySaidaBetween(inicio, fim);
+    }
+
+    public List<MovimentacaoResponse> getRelatorioGeralBetween(LocalDateTime inicio, LocalDateTime fim) {
+        return repository.findAllBetween(inicio, fim);
+    }
 
 }
