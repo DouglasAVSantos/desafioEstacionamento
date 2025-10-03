@@ -39,11 +39,11 @@ public class VagaService {
     }
 
     public List<VagaResponse> findAll() {
-        return repository.findAllByAtivoTrue().stream().map(VagaMapper::toResponse).toList();
+        return repository.findAllByAtivoTrue();
     }
 
     public List<VagaResponse> findAllByEstado(Estado estado) {
-        return repository.findAllByAtivoTrueAndEstado(estado).stream().map(VagaMapper::toResponse).toList();
+        return repository.findAllByAtivoTrueAndEstado(estado);
     }
 
     @Transactional
