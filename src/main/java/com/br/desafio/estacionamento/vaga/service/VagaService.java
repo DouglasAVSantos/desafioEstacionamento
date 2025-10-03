@@ -2,7 +2,7 @@ package com.br.desafio.estacionamento.vaga.service;
 
 import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
-import com.br.desafio.estacionamento.vaga.dto.VagaMapper;
+import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
 import com.br.desafio.estacionamento.vaga.entity.Estado;
@@ -34,6 +34,10 @@ public class VagaService {
         return VagaMapper.toResponse(repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("registro não encotrado")));
     }
 
+    public Vaga findVaga(String codigo) {
+        return repository.findByCodigoAndAtivoTrue(codigo).orElseThrow(() -> new NotFoundException("registro não encotrado"));
+    }
+
     public List<VagaResponse> findAll() {
         return repository.findAllByAtivoTrue().stream().map(VagaMapper::toResponse).toList();
     }
@@ -50,26 +54,26 @@ public class VagaService {
     }
 
     @Transactional
-    public VagaResponse checkOut(Long id) {
-        Vaga vaga = getVaga(id);
+    public Vaga checkOut(String codigoDaVaga) {
+        Vaga vaga = findVaga(codigoDaVaga);
         if (vaga.getEstado().equals(Estado.LIVRE)) {
             throw new ConflictException("Vaga não está ocupada");
         }
         vaga.setEstado(Estado.LIVRE);
-        return VagaMapper.toResponse(repository.save(vaga));
+        return repository.save(vaga);
     }
 
     @Transactional
-    public VagaResponse checkIn(Long id) {
-        Vaga vaga = getVaga(id);
+    public Vaga checkIn(String codigoDaVaga) {
+        Vaga vaga = findVaga(codigoDaVaga);
         if (vaga.getEstado().equals(Estado.OCUPADA)) {
             throw new ConflictException("Vaga já ocupada");
         }
         vaga.setEstado(Estado.OCUPADA);
-        return VagaMapper.toResponse(repository.save(vaga));
+        return repository.save(vaga);
     }
 
-    private Vaga getVaga(Long id) {
+    public Vaga getVaga(Long id) {
         return repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("registro não encontrado para o id: " + id));
     }
 
