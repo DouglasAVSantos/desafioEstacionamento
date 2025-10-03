@@ -26,6 +26,14 @@ public class GlobalExceptionHandler {
         HashMap<String,Object> map = new HashMap<>();
         map.put("horario", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")));
         map.put("erro",ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(map);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(map);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String,Object>>handleIllegalArgument(IllegalArgumentException ex){
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("horario", LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss - dd/MM/yyyy")));
+        map.put("erro",ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
     }
 }
