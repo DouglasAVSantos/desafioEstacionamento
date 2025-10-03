@@ -1,9 +1,9 @@
 package com.br.desafio.estacionamento.movimentacao.repository;
 
+import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
 import com.br.desafio.estacionamento.movimentacao.entity.Movimentacao;
-import com.br.desafio.estacionamento.vaga.entity.Estado;
-import com.br.desafio.estacionamento.veiculo.entity.TipoVeiculo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,16 +13,25 @@ public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Long
 
     Optional<Movimentacao> findByVeiculoPlacaAndSaidaIsNull(String placa);
 
+    List<MovimentacaoResponse> findAllByVeiculoPlaca(String placa);
 
-    List<Movimentacao> findAllByVagaEstado(Estado estado);
+    List<MovimentacaoResponse> findAllByEntradaBetween(LocalDateTime inicio, LocalDateTime fim);
 
-    List<Movimentacao> findAllByVeiculoPlaca(String placa);
+    List<MovimentacaoResponse> findAllBySaidaBetween(LocalDateTime inicio, LocalDateTime fim);
 
-    List<Movimentacao> findAllByEntradaBetween(LocalDateTime inicio, LocalDateTime fim);
+    List<MovimentacaoResponse> findAllBySaidaIsNull();
 
-    List<Movimentacao> findAllBySaidaIsNull();
+    @Query(value = """
+            
+            SELECT * FROM movimentacao m
+            WHERE (m.entrada >= :inicio and m.saida <= :fim)
+            or
+             (m.saida is null and m.entrada <= :fim)
+            
+            """, nativeQuery = true)
+    List<MovimentacaoResponse> findAllBetween(LocalDateTime inicio, LocalDateTime fim);
 
-    List<Movimentacao> findAllBySaidaIsNullAndVeiculoTipo(TipoVeiculo tipo);
 
+    List<MovimentacaoResponse> getAll();
 
 }
