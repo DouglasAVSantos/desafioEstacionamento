@@ -17,7 +17,7 @@ public class VeiculoMapper {
                 .filter(e -> e.name().equalsIgnoreCase(input))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Tipo inválido. \nTipos aceitos: " + Arrays.toString(TipoVeiculo.values())
+                        "Tipo inválido. Tipos aceitos: " + Arrays.toString(TipoVeiculo.values())
                 ));
     }
 
