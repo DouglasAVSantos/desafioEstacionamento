@@ -1,7 +1,6 @@
 package com.br.desafio.estacionamento.vaga.entity;
 
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
-import com.br.desafio.estacionamento.veiculo.entity.Veiculo;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -20,9 +19,6 @@ public class Vaga {
     @Enumerated(EnumType.STRING)
     private Estado estado;
     private Boolean ativo;
-    @ManyToOne
-    @JoinColumn(name = "veiculo_id")
-    private Veiculo veiculo;
 
     private Vaga() {
     }
@@ -30,6 +26,7 @@ public class Vaga {
     public LocalDateTime getCriadoEm() {
         return criadoEm;
     }
+
 
     private Vaga(String codigo, LocalDateTime criadoEm, Estado estado, Boolean ativo) {
         this.codigo = codigo;

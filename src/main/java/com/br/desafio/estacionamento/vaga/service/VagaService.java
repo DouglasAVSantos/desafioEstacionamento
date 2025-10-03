@@ -2,11 +2,11 @@ package com.br.desafio.estacionamento.vaga.service;
 
 import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
-import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.dto.VagaResponse;
 import com.br.desafio.estacionamento.vaga.entity.Estado;
 import com.br.desafio.estacionamento.vaga.entity.Vaga;
+import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.vaga.repository.VagaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class VagaService {
     }
 
     public VagaResponse findVaga(Long id) {
-        return VagaMapper.toResponse(repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("registro não encotrado")));
+        return VagaMapper.toResponse(repository.findByIdAndAtivoTrue(id).orElseThrow(() -> new NotFoundException("Vaga não encotrada para o id '" + id + "'")));
     }
 
     public Vaga findVaga(String codigo) {
-        return repository.findByCodigoAndAtivoTrue(codigo).orElseThrow(() -> new NotFoundException("registro não encotrado"));
+        return repository.findByCodigoAndAtivoTrue(codigo).orElseThrow(() -> new NotFoundException("Vaga não encotrada para o codigo '" + codigo + "'"));
     }
 
     public List<VagaResponse> findAll() {
@@ -55,7 +55,7 @@ public class VagaService {
 
     @Transactional
     public Vaga checkOut(String codigoDaVaga) {
-        Vaga vaga = findVaga(codigoDaVaga);
+        Vaga vaga = findVaga(codigoDaVaga.trim().toUpperCase());
         if (vaga.getEstado().equals(Estado.LIVRE)) {
             throw new ConflictException("Vaga não está ocupada");
         }
@@ -65,7 +65,7 @@ public class VagaService {
 
     @Transactional
     public Vaga checkIn(String codigoDaVaga) {
-        Vaga vaga = findVaga(codigoDaVaga);
+        Vaga vaga = findVaga(codigoDaVaga.trim().toUpperCase());
         if (vaga.getEstado().equals(Estado.OCUPADA)) {
             throw new ConflictException("Vaga já ocupada");
         }
