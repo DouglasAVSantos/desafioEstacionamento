@@ -105,7 +105,6 @@ class MovimentacaoServiceTest {
         when(repository.findByVeiculoPlacaAndSaidaIsNull(movimentacaoRequest.placaVeiculo())).thenReturn(Optional.of(movimentacao));
         when(vagaService.checkOut(movimentacaoRequest.codigoVaga())).thenReturn(vaga);
         when(repository.save(any(Movimentacao.class))).thenReturn(movimentacao);
-
         MovimentacaoResponse result = service.checkOut(movimentacaoRequest.placaVeiculo());
 
         assertEquals(movimentacao.getId(), result.id());
@@ -119,11 +118,12 @@ class MovimentacaoServiceTest {
 
     @Test
     void getMovimentacao() {
+        movimentacao.setId(2L);
         when(repository.findById(movimentacao.getId())).thenReturn(Optional.of(movimentacao));
 
-        assertThat(service.getMovimentacao(1L)).isEqualTo(movimentacao);
+        assertThat(service.getMovimentacao(2L)).isEqualTo(movimentacao);
 
-        verify(repository).findById(1L);
+        verify(repository).findById(2L);
 
     }
 
@@ -131,9 +131,9 @@ class MovimentacaoServiceTest {
     void deveLancarNotFoundExceptionAoChamarGetMovimentacao() {
         when(repository.findById(movimentacao.getId())).thenReturn(Optional.empty());
 
-        NotFoundException result = assertThrows(NotFoundException.class,()->service.getMovimentacao(1L));
+        NotFoundException result = assertThrows(NotFoundException.class, () -> service.getMovimentacao(1L));
 
-        assertEquals("Movimentação não encontrada para o id:1",result.getMessage());
+        assertEquals("Movimentação não encontrada para o id:1", result.getMessage());
         verify(repository).findById(1L);
 
     }

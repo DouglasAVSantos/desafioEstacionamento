@@ -10,7 +10,6 @@ import com.br.desafio.estacionamento.vaga.mapper.VagaMapper;
 import com.br.desafio.estacionamento.vaga.repository.VagaRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -182,12 +181,13 @@ class VagaServiceTest {
 
     @Test
     void deveRetornarVagaComGetVaga() {
-        when(repository.findByIdAndAtivoTrue(1L)).thenReturn(Optional.of(vaga));
+        vaga.setId(2L);
+        when(repository.findByIdAndAtivoTrue(2L)).thenReturn(Optional.of(vaga));
 
-        Vaga result = service.getVaga(1L);
+        Vaga result = service.getVaga(2L);
 
         assertThat(result).isEqualTo(vaga);
-        verify(repository).findByIdAndAtivoTrue(1L);
+        verify(repository).findByIdAndAtivoTrue(2L);
     }
 
     @Test
