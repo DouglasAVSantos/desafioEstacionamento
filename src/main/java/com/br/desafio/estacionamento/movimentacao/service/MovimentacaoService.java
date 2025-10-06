@@ -40,10 +40,10 @@ public class MovimentacaoService {
     @Transactional
     public MovimentacaoResponse checkIn(MovimentacaoRequest request) {
         Veiculo veiculo = veiculoService.findVeiculo(request.placaVeiculo());
-        Vaga vaga = vagaService.checkIn(request.codigoVaga());
         if (repository.findByVeiculoPlacaAndSaidaIsNull(veiculo.getPlaca()).isPresent()) {
             throw new ConflictException("Veiculo ja consta em outra vaga");
         }
+        Vaga vaga = vagaService.checkIn(request.codigoVaga());
         Movimentacao movimentacao = new Movimentacao();
         movimentacao.setEntrada(LocalDateTime.now());
         movimentacao.setVaga(vaga);
