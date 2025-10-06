@@ -226,4 +226,21 @@ public class MovimentacaoControllerTest {
 
     }
 
+    @Test
+    void deveLancarMethodArgumentTypeMismatchExceptionQuandoPassarOParametroTipoInvalido() throws Exception {
+
+        when(service.getRelatorioGeralBetween(response.entrada(), response.saida())).thenReturn(listaRelatorio);
+
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "geral")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro")
+                        .value("Valor inválido para o parâmetro tipo. Valores aceitos: "+ Arrays.toString(TipoRelatorio.values())));
+
+        verify(service,never()).getRelatorioGeralBetween(response.entrada(), response.saida());
+
+    }
+
+
 }
