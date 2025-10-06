@@ -7,6 +7,8 @@ import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
 import com.br.desafio.estacionamento.movimentacao.entity.Movimentacao;
 import com.br.desafio.estacionamento.movimentacao.mapper.MovimentacaoMapper;
 import com.br.desafio.estacionamento.movimentacao.service.MovimentacaoService;
+import com.br.desafio.estacionamento.shared.ConflictException;
+import com.br.desafio.estacionamento.shared.NotFoundException;
 import com.br.desafio.estacionamento.vaga.Estado;
 import com.br.desafio.estacionamento.vaga.dto.VagaRequest;
 import com.br.desafio.estacionamento.vaga.entity.Vaga;
@@ -74,6 +76,45 @@ public class MovimentacaoControllerTest {
                         .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1L));
+
+        verify(service).checkIn(any(MovimentacaoRequest.class));
+    }
+
+    @Test
+    void checkInComConflictException() throws Exception {
+
+        when(service.checkIn(any(MovimentacaoRequest.class))).thenThrow(new ConflictException("Veiculo ja consta em outra vaga"));
+        mockMvc.perform(post("/api/v1/movimentacao")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.erro").value("Veiculo ja consta em outra vaga"));
+
+        verify(service).checkIn(any(MovimentacaoRequest.class));
+    }
+
+    @Test
+    void checkInComNotFoundException() throws Exception {
+
+        when(service.checkIn(any(MovimentacaoRequest.class))).thenThrow(new NotFoundException("Veículo ou vaga não encontrados"));
+        mockMvc.perform(post("/api/v1/movimentacao")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.erro").value("Veículo ou vaga não encontrados"));
+
+        verify(service).checkIn(any(MovimentacaoRequest.class));
+    }
+
+    @Test
+    void checkInComIllegalArgumentException() throws Exception {
+
+        when(service.checkIn(any(MovimentacaoRequest.class))).thenThrow(new IllegalArgumentException("Dados de entrada inválidos"));
+        mockMvc.perform(post("/api/v1/movimentacao")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro").value("Dados de entrada inválidos"));
 
         verify(service).checkIn(any(MovimentacaoRequest.class));
     }
