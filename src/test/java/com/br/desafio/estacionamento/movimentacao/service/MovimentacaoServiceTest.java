@@ -128,6 +128,17 @@ class MovimentacaoServiceTest {
     }
 
     @Test
+    void deveLancarNotFoundExceptionAoChamarGetMovimentacao() {
+        when(repository.findById(movimentacao.getId())).thenReturn(Optional.empty());
+
+        NotFoundException result = assertThrows(NotFoundException.class,()->service.getMovimentacao(1L));
+
+        assertEquals("Movimentação não encontrada para o id:1",result.getMessage());
+        verify(repository).findById(1L);
+
+    }
+
+    @Test
     void calculoValorTotal() {
         LocalDateTime inicio = LocalDateTime.now();
         LocalDateTime fim = LocalDateTime.now().plusMinutes(15);
