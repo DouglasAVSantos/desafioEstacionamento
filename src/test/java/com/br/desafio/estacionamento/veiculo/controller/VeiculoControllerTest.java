@@ -102,4 +102,14 @@ class VeiculoControllerTest {
 
         verify(service).atualizarCadastro(eq(1L), any(VeiculoRequest.class));
     }
+
+    @Test
+    void deveLancarMethodArgumentTypeMismatchExceptionAoPassarPathInvalidoNaRota() throws Exception {
+        mockMvc.perform(get("/api/v1/veiculo/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.erro")
+                        .value("Method parameter 'id': Failed to convert value of type 'java.lang.String' to required type 'java.lang.Long'; For input string: \"abc\""));
+
+        verify(service,never()).findVeiculo("abc");
+    }
 }
