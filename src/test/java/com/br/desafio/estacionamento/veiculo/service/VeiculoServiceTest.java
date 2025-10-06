@@ -2,23 +2,25 @@ package com.br.desafio.estacionamento.veiculo.service;
 
 import com.br.desafio.estacionamento.shared.ConflictException;
 import com.br.desafio.estacionamento.shared.NotFoundException;
+import com.br.desafio.estacionamento.veiculo.TipoVeiculo;
 import com.br.desafio.estacionamento.veiculo.dto.VeiculoRequest;
 import com.br.desafio.estacionamento.veiculo.dto.VeiculoResponse;
 import com.br.desafio.estacionamento.veiculo.entity.Veiculo;
 import com.br.desafio.estacionamento.veiculo.mapper.VeiculoMapper;
 import com.br.desafio.estacionamento.veiculo.repository.VeiculoRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +33,7 @@ class VeiculoServiceTest {
     @Mock
     VeiculoRepository repository;
 
-    VeiculoRequest request = new VeiculoRequest("CG150","ABC1234","MOTO");
+    VeiculoRequest request = new VeiculoRequest("CG150", "ABC1234", "MOTO");
     Veiculo veiculo = VeiculoMapper.toEntity(request);
     VeiculoResponse response = VeiculoMapper.toResponse(veiculo);
 
@@ -42,9 +44,9 @@ class VeiculoServiceTest {
 
         VeiculoResponse result = service.cadastrar(request);
 
-        assertEquals(veiculo.getId(),result.id());
-        assertEquals(veiculo.getModelo(),result.modelo());
-        assertEquals(veiculo.getPlaca(),result.placa());
+        assertEquals(veiculo.getId(), result.id());
+        assertEquals(veiculo.getModelo(), result.modelo());
+        assertEquals(veiculo.getPlaca(), result.placa());
 
         verify(repository).findByPlaca(request.placa());
         verify(repository).save(any(Veiculo.class));
@@ -53,12 +55,12 @@ class VeiculoServiceTest {
     @Test
     void deveLancarConflictExceptionAoCadastrar() {
         when(repository.findByPlaca(request.placa())).thenReturn(Optional.of(veiculo));
-        ConflictException result = assertThrows(ConflictException.class, ()-> service.cadastrar(request));
+        ConflictException result = assertThrows(ConflictException.class, () -> service.cadastrar(request));
 
-        assertEquals("registro já cadastrado",result.getMessage());
+        assertEquals("registro já cadastrado", result.getMessage());
 
         verify(repository).findByPlaca(request.placa());
-        verify(repository,never()).save(any(Veiculo.class));
+        verify(repository, never()).save(any(Veiculo.class));
     }
 
 //    @Test
@@ -75,17 +77,31 @@ class VeiculoServiceTest {
     }
 
     @Test
-    void testFindVeiculoPorId() {
-        when(repository.findById(1L)).thenReturn(Optional.of(veiculo));
-        assertThat(service.findVeiculo(1L)).isEqualTo(response);
+    void deveLancarIllegalArgumentExceptionAoTentarMappearDeRequestParaEntity() {
+        VeiculoRequest requestComErro = new VeiculoRequest("FAZER", "ABC1233", "refrigerante");
+        when(repository.findByPlaca(requestComErro.placa())).thenReturn(Optional.empty());
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+            service.cadastrar(requestComErro);
+        });
 
-        verify(repository).findById(1L);
+        assertEquals("Tipo inválido. Tipos aceitos: " + Arrays.toString(TipoVeiculo.values()), ex.getMessage());
+        verify(repository).findByPlaca(requestComErro.placa());
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void testFindVeiculoPorId() {
+        veiculo.setId(2L);
+        when(repository.findById(2L)).thenReturn(Optional.of(veiculo));
+        assertThat(service.findVeiculo(2L)).isEqualTo(VeiculoMapper.toResponse(veiculo));
+
+        verify(repository).findById(2L);
     }
 
     @Test
     void testFindVeiculoNotFound() {
         when(repository.findByPlaca(request.placa())).thenReturn(Optional.empty());
-        NotFoundException ex =  assertThrows(NotFoundException.class,()->service.findVeiculo(request.placa()));
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> service.findVeiculo(request.placa()));
 
         assertThat(ex.getMessage()).isEqualTo("Veiculo não encontrado");
         verify(repository).findByPlaca(request.placa());
@@ -97,11 +113,11 @@ class VeiculoServiceTest {
         when(repository.findByPlaca(request.placa())).thenReturn(Optional.empty());
         when(repository.save(any(Veiculo.class))).thenReturn(veiculo);
 
-        VeiculoResponse result = service.atualizarCadastro(1L,request);
+        VeiculoResponse result = service.atualizarCadastro(1L, request);
 
-        assertEquals(veiculo.getId(),result.id());
-        assertEquals(veiculo.getModelo(),result.modelo());
-        assertEquals(veiculo.getPlaca(),result.placa());
+        assertEquals(veiculo.getId(), result.id());
+        assertEquals(veiculo.getModelo(), result.modelo());
+        assertEquals(veiculo.getPlaca(), result.placa());
 
         verify(repository).findById(1L);
         verify(repository).findByPlaca(request.placa());
@@ -112,26 +128,30 @@ class VeiculoServiceTest {
     void LancaNotFoundAoAtualizarCadastro() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        NotFoundException result = assertThrows(NotFoundException.class,()->{service.atualizarCadastro(1L,request);});
+        NotFoundException result = assertThrows(NotFoundException.class, () -> {
+            service.atualizarCadastro(1L, request);
+        });
 
-        assertEquals("registro não encontrado para o id: 1",result.getMessage());
+        assertEquals("registro não encontrado para o id: 1", result.getMessage());
 
         verify(repository).findById(1L);
-        verify(repository,never()).findByPlaca(request.placa());
-        verify(repository,never()).save(any(Veiculo.class));
+        verify(repository, never()).findByPlaca(request.placa());
+        verify(repository, never()).save(any(Veiculo.class));
     }
 
     @Test
     void LancaConflictExceptionAoAtualizarCadastro() {
         when(repository.findById(1L)).thenReturn(Optional.of(veiculo));
         when(repository.findByPlaca(request.placa())).thenReturn(Optional.of(veiculo));
-        ConflictException result = assertThrows(ConflictException.class,()->{service.atualizarCadastro(1L,request);});
+        ConflictException result = assertThrows(ConflictException.class, () -> {
+            service.atualizarCadastro(1L, request);
+        });
 
-        assertEquals("veiculo com a placa '"+request.placa()+"' já cadastrada",result.getMessage());
+        assertEquals("veiculo com a placa '" + request.placa() + "' já cadastrada", result.getMessage());
 
         verify(repository).findById(1L);
         verify(repository).findByPlaca(request.placa());
-        verify(repository,never()).save(any(Veiculo.class));
+        verify(repository, never()).save(any(Veiculo.class));
     }
 
     @Test
