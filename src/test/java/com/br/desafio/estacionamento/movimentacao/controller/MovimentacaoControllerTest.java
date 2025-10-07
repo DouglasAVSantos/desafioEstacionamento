@@ -1,6 +1,7 @@
 package com.br.desafio.estacionamento.movimentacao.controller;
 
 
+import com.br.desafio.estacionamento.movimentacao.TipoRelatorio;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRelatorioResponse;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRequest;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
@@ -25,11 +26,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -150,7 +151,8 @@ public class MovimentacaoControllerTest {
     void relatorioVeiculosEstacionados() throws Exception {
         when(service.getVeiculosEstacionados()).thenReturn(listaRelatorio);
 
-        mockMvc.perform(get("/api/v1/movimentacao/relatorio/estacionados")
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "VEICULOS_ESTACIONADOS")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id").value(1L))
@@ -164,7 +166,8 @@ public class MovimentacaoControllerTest {
     void relatorioVeiculoPorPlaca() throws Exception {
         when(service.getRelatorioVeiculoIndividual(request.placaVeiculo())).thenReturn(listaRelatorio);
 
-        mockMvc.perform(get("/api/v1/movimentacao/relatorio/por-placa")
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "VEICULO_POR_PLACA")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("placa", request.placaVeiculo()))
                 .andExpect(status().isOk())
@@ -180,7 +183,8 @@ public class MovimentacaoControllerTest {
 
         when(service.getRelatorioEntradaBetween(response.entrada(), response.saida())).thenReturn(listaRelatorio);
 
-        mockMvc.perform(get("/api/v1/movimentacao/relatorio/entrada")
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "ENTRADA_POR_PERIODO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("inicio", String.valueOf(response.entrada()))
                         .param("fim", String.valueOf(response.entrada())))
@@ -197,7 +201,8 @@ public class MovimentacaoControllerTest {
 
         when(service.getRelatorioSaidaBetween(response.entrada(), response.saida())).thenReturn(listaRelatorio);
 
-        mockMvc.perform(get("/api/v1/movimentacao/relatorio/saida")
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "SAIDA_POR_PERIODO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("inicio", String.valueOf(response.entrada()))
                         .param("fim", String.valueOf(response.entrada())))
@@ -214,7 +219,8 @@ public class MovimentacaoControllerTest {
 
         when(service.getRelatorioGeralBetween(response.entrada(), response.saida())).thenReturn(listaRelatorio);
 
-        mockMvc.perform(get("/api/v1/movimentacao/relatorio/")
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "GERAL_POR_PERIODO")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("inicio", String.valueOf(response.entrada()))
                         .param("fim", String.valueOf(response.entrada())))
@@ -223,6 +229,30 @@ public class MovimentacaoControllerTest {
                 .andExpect(jsonPath("$.[0].modelo").value(relatorio.modelo()));
 
         verify(service).getRelatorioGeralBetween(response.entrada(), response.saida());
+
+    }
+
+    @Test
+    void relatorioGeralComInicioNulo() throws Exception {
+
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "GERAL_POR_PERIODO")
+                        .param("fim",String.valueOf(LocalDateTime.now())))
+                .andExpect(status().isOk());
+
+        verify(service, never()).getRelatorioGeralBetween(response.entrada(), response.saida());
+
+    }
+
+    @Test
+    void relatorioGeralComFimNulo() throws Exception {
+
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "GERAL_POR_PERIODO")
+                        .param("inicio",String.valueOf(LocalDateTime.now())))
+                .andExpect(status().isOk());
+
+        verify(service, never()).getRelatorioGeralBetween(response.entrada(), response.saida());
 
     }
 
@@ -236,11 +266,89 @@ public class MovimentacaoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.erro")
-                        .value("Valor inválido para o parâmetro tipo. Valores aceitos: "+ Arrays.toString(TipoRelatorio.values())));
+                        .value("Valor inválido para o parâmetro tipo. Valores aceitos: " + Arrays.toString(TipoRelatorio.values())));
 
-        verify(service,never()).getRelatorioGeralBetween(response.entrada(), response.saida());
+        verify(service, never()).getRelatorioGeralBetween(response.entrada(), response.saida());
 
     }
 
+    @Test
+    void deveRetornarListaVaziaQuandoPlacaForNula() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "VEICULO_POR_PLACA")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$").isEmpty());
+
+        verify(service, never()).getRelatorioVeiculoIndividual(any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaEntrada() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "ENTRADA_POR_PERIODO")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, never()).getRelatorioEntradaBetween(any(), any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaSaida() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "SAIDA_POR_PERIODO")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, never()).getRelatorioSaidaBetween(any(), any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaSaidaCase2() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "SAIDA_POR_PERIODO")
+                        .param("inicio", String.valueOf(LocalDateTime.now()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        verify(service, never()).getRelatorioSaidaBetween(any(), any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaSaidaCase3() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "SAIDA_POR_PERIODO")
+                        .param("fim", String.valueOf(LocalDateTime.now()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        verify(service, never()).getRelatorioSaidaBetween(any(), any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaEntradaCase2() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "ENTRADA_POR_PERIODO")
+                        .param("inicio", String.valueOf(LocalDateTime.now()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(service, never()).getRelatorioSaidaBetween(any(), any());
+    }
+
+    @Test
+    void deveRetornarListaVaziaQuandoDatasForemNulasParaEntradaCase3() throws Exception {
+        mockMvc.perform(get("/api/v1/movimentacao/relatorio")
+                        .param("tipo", "ENTRADA_POR_PERIODO")
+                        .param("fim", String.valueOf(LocalDateTime.now()))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+
+        verify(service, never()).getRelatorioSaidaBetween(any(), any());
+    }
 
 }
