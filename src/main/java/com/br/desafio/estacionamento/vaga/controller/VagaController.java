@@ -38,21 +38,15 @@ public class VagaController {
         return ResponseEntity.created(URI.create("api/v1/vaga/" + response.id())).body(response);
     }
 
-    @Operation(summary = "Listar todas as vagas", description = "Retorna uma lista com todas as vagas cadastradas no sistema.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de vagas retornada com sucesso")
-    })
-    @GetMapping("/")
-    public ResponseEntity<List<VagaResponse>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
-
-    @Operation(summary = "Listar vagas por estado", description = "Filtra e retorna as vagas com base no estado (LIVRE ou OCUPADA).")
+    @Operation(summary = "Listar vagas com filtro de estado", description = "Filtra e retorna todas as vagas podendo filtrar o estado (LIVRE ou OCUPADA).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de vagas filtrada retornada com sucesso")
     })
-    @GetMapping("/estado")
-    public ResponseEntity<List<VagaResponse>> findAllByEstado(@RequestParam Estado estado) {
+    @GetMapping("/")
+    public ResponseEntity<List<VagaResponse>> findAllByEstado(@RequestParam(required = false) Estado estado) {
+        if (estado == null) {
+            return ResponseEntity.ok(service.findAll());
+        }
         return ResponseEntity.ok(service.findAllByEstado(estado));
     }
 
