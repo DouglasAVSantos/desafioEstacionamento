@@ -76,7 +76,7 @@ class VagaControllerTest {
     void deveListarVagasPorEstado() throws Exception {
         when(service.findAllByEstado(Estado.LIVRE)).thenReturn(List.of(response));
 
-        mockMvc.perform(get("/api/v1/vaga/estado").param("estado", "LIVRE")
+        mockMvc.perform(get("/api/v1/vaga/").param("estado", "LIVRE")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id", is(1)))
