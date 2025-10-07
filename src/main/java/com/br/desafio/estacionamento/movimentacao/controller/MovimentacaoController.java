@@ -1,5 +1,6 @@
 package com.br.desafio.estacionamento.movimentacao.controller;
 
+import com.br.desafio.estacionamento.movimentacao.TipoRelatorio;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRelatorioResponse;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoRequest;
 import com.br.desafio.estacionamento.movimentacao.dto.MovimentacaoResponse;
@@ -15,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -52,60 +53,59 @@ public class MovimentacaoController {
         return ResponseEntity.status(HttpStatus.OK).body(service.checkOut(placa));
     }
 
-    @Operation(summary = "Listar todas as movimentações", description = "Retorna uma lista com todas as movimentações já registradas, incluindo as ativas e as finalizadas.")
+    @Operation(
+            summary = "Gerar relatórios de movimentação",
+            description = """
+                    Endpoint para gerar diferentes tipos de relatórios. O comportamento é determinado pelo parâmetro obrigatório `tipo`.
+                    <br>
+                    <h3>Tipos de Relatório (`tipo`):</h3>
+                    <ul>
+                        <li><b>VEICULOS_ESTACIONADOS</b>: Retorna os veículos atualmente no estacionamento.</li>
+                        <li><b>VEICULO_POR_PLACA</b>: Retorna o histórico de um veículo específico. Requer o parâmetro `placa`.</li>
+                        <li><b>ENTRADA_POR_PERIODO</b>: Retorna movimentações com entrada no período especificado. Requer os parâmetros `inicio` e `fim`.</li>
+                        <li><b>SAIDA_POR_PERIODO</b>: Retorna movimentações com saída no período especificado. Requer os parâmetros `inicio` e `fim`.</li>
+                        <li><b>GERAL_POR_PERIODO</b>: Retorna todas as movimentações que ocorreram dentro do período. Requer os parâmetros `inicio` e `fim`.</li>
+                    </ul>
+                    """
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista de movimentações retornada com sucesso")
+            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Combinação de parâmetros inválida para o tipo de relatório solicitado")
     })
+    @GetMapping("/relatorio")
+    public ResponseEntity<List<MovimentacaoRelatorioResponse>> gerarRelatorio(@RequestParam TipoRelatorio tipo,
+                                                                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
+                                                                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim,
+                                                                              @RequestParam(required = false) String placa
+    ) {
+        List<MovimentacaoRelatorioResponse> result = new ArrayList<>();
+        switch (tipo) {
+            case VEICULOS_ESTACIONADOS -> {
+                result = service.getVeiculosEstacionados();
+            }
+            case VEICULO_POR_PLACA -> {
+                if (placa != null) result = service.getRelatorioVeiculoIndividual(placa);
+            }
+            case ENTRADA_POR_PERIODO -> {
+                if (inicio != null && fim != null)
+                    result = service.getRelatorioEntradaBetween(inicio, fim);
+            }
+            case SAIDA_POR_PERIODO -> {
+                if (inicio != null && fim != null)
+                    result = (service.getRelatorioSaidaBetween(inicio, fim));
+            }
+            case GERAL_POR_PERIODO -> {
+                if (inicio != null && fim != null)
+                    result = (service.getRelatorioGeralBetween(inicio, fim));
+            }
+
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @Operation(summary = "Listar todas as movimentações", description = "Retorna uma lista completa de todas as movimentações já registradas no sistema.")
     @GetMapping("/")
     public ResponseEntity<List<MovimentacaoRelatorioResponse>> getAll() {
         return ResponseEntity.ok(service.getAll());
-    }
-
-    @Operation(summary = "Relatório de veículos estacionados", description = "Retorna uma lista de todas as movimentações que estão atualmente em aberto (veículos estacionados).")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
-    })
-    @GetMapping("/relatorio/estacionados")
-    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioVeiculosEstacionados() {
-        return ResponseEntity.ok(service.getVeiculosEstacionados());
-    }
-
-    @Operation(summary = "Relatório de movimentações por placa", description = "Retorna o histórico completo de movimentações para uma placa de veículo específica.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
-    })
-    @GetMapping("/relatorio/por-placa")
-    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioVeiculoPorPlaca(@RequestParam String placa) {
-        return ResponseEntity.ok(service.getRelatorioVeiculoIndividual(placa));
-    }
-
-    @Operation(summary = "Relatório de entradas por período", description = "Retorna todas as movimentações cuja data de entrada está dentro do período especificado.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
-    })
-    @GetMapping("/relatorio/entrada")
-    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioEntradaBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-                                                                                       @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
-        return ResponseEntity.ok(service.getRelatorioEntradaBetween(inicio, fim));
-    }
-
-    @Operation(summary = "Relatório de saídas por período", description = "Retorna todas as movimentações cuja data de saída está dentro do período especificado.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
-    })
-    @GetMapping("/relatorio/saida")
-    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioSaidaBetween(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-                                                                                     @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
-        return ResponseEntity.ok(service.getRelatorioSaidaBetween(inicio, fim));
-    }
-
-    @Operation(summary = "Relatório geral por período", description = "Retorna todas as movimentações que iniciaram OU terminaram dentro do período especificado.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Relatório retornado com sucesso")
-    })
-    @GetMapping("/relatorio/")
-    public ResponseEntity<List<MovimentacaoRelatorioResponse>> relatorioGeral(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-                                                                              @RequestParam  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fim) {
-        return ResponseEntity.ok(service.getRelatorioGeralBetween(inicio, fim));
     }
 }
