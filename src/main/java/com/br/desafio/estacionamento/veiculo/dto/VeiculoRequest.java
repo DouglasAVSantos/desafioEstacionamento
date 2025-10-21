@@ -8,13 +8,13 @@ public record VeiculoRequest(
         String modelo,
         @NotBlank(message = "CAMPO OBRIGATORIO")
         String placa,
-        @NotNull(message = "CAMPO OBRIGATORIO")
+        @NotBlank(message = "CAMPO OBRIGATORIO")
         String tipo) {
 
     public VeiculoRequest {
         modelo = modelo.trim().toUpperCase();
         placa = placa.trim().toUpperCase();
-        tipo = tipo.trim().toLowerCase();
+        tipo = tipo.trim().toUpperCase();
     }
 
 
