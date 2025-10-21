@@ -77,6 +77,13 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.12</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclui a classe principal -->
+                        <exclude>**/EstacionamentoApplication.class</exclude>
+                        <exclude>**/config/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
